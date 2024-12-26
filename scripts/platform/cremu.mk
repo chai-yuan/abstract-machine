@@ -1,10 +1,10 @@
-AM_SRCS := riscv/npc/start.S \
-           riscv/npc/trm.c \
-           riscv/npc/ioe.c \
-           riscv/npc/timer.c \
-           riscv/npc/input.c \
-           riscv/npc/cte.c \
-           riscv/npc/trap.S \
+AM_SRCS := riscv/cremu/start.S \
+           riscv/cremu/trm.c \
+           riscv/cremu/ioe.c \
+           riscv/cremu/timer.c \
+           riscv/cremu/input.c \
+           riscv/cremu/cte.c \
+           riscv/cremu/trap.S \
            platform/dummy/vme.c \
            platform/dummy/mpe.c
 
@@ -17,6 +17,9 @@ MAINARGS_MAX_LEN = 64
 MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
 CFLAGS += -DMAINARGS_MAX_LEN=$(MAINARGS_MAX_LEN) -DMAINARGS_PLACEHOLDER=\""$(MAINARGS_PLACEHOLDER)"\"
 
+CREMU_HOME = /home/charain/Project/cremu
+CREMUFLAGS += 
+
 insert-arg: image
 	@python $(AM_HOME)/tools/insert-arg.py $(IMAGE).bin $(MAINARGS_MAX_LEN) "$(MAINARGS_PLACEHOLDER)" "$(mainargs)"
 
@@ -26,6 +29,7 @@ image: image-dep
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
 run: insert-arg
-	echo "TODO: add command here to run simulation"
+	echo "TODO: add command here to run simulation $(IMAGE)"
+	$(MAKE) -C $(CREMU_HOME) run ARGS="$(CREMUFLAGS)" IMG=$(IMAGE).bin
 
 .PHONY: insert-arg
