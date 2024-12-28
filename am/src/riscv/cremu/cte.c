@@ -5,15 +5,29 @@
 static Context* (*user_handler)(Event, Context*) = NULL;
 
 Context* __am_irq_handle(Context *c) {
-  if (user_handler) {
-    Event ev = {0};
-    switch (c->mcause) {
-      default: ev.event = EVENT_ERROR; break;
-    }
+    if (user_handler) {
+        Event ev = {0};
 
-    c = user_handler(ev, c);
-    assert(c != NULL);
-  }
+        switch (c->mcause) {
+            case 0xb:
+                if (c->GPR1 == -1) {
+                    ev.event = EVENT_YIELD;
+                    c->mepc = c->mepc + 4;
+                } else if (c->GPR1 >= 0) {
+                    ev.event = EVENT_SYSCALL;
+                    c->mepc = c->mepc + 4;
+                } else {
+                    ev.event = EVENT_ERROR;
+                }
+                break;
+            default:
+                ev.event = EVENT_ERROR;
+                break;
+        }
+
+        c = user_handler(ev, c);
+        assert(c != NULL);
+    }
 
   return c;
 }
@@ -31,7 +45,14 @@ bool cte_init(Context*(*handler)(Event, Context*)) {
 }
 
 Context *kcontext(Area kstack, void (*entry)(void *), void *arg) {
-  return NULL;
+    Context* ret = kstack.end - sizeof(Context);
+    /* 设置栈指针和入口 */
+    ret->gpr[2] = (uintptr_t)(kstack.end - sizeof(Context) - 1);
+    ret->mepc = (uintptr_t)entry;
+
+    ret->GPR2 = (uintptr_t)arg;
+
+    return ret;
 }
 
 void yield() {
