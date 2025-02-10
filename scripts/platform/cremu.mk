@@ -17,7 +17,7 @@ MAINARGS_MAX_LEN = 64
 MAINARGS_PLACEHOLDER = The insert-arg rule in Makefile will insert mainargs here.
 CFLAGS += -DMAINARGS_MAX_LEN=$(MAINARGS_MAX_LEN) -DMAINARGS_PLACEHOLDER=\""$(MAINARGS_PLACEHOLDER)"\"
 
-CREMUFLAGS += 
+CREMUFLAGS += --bin=$(IMAGE).bin --machine=nemu
 
 insert-arg: image
 	@python $(AM_HOME)/tools/insert-arg.py $(IMAGE).bin $(MAINARGS_MAX_LEN) "$(MAINARGS_PLACEHOLDER)" "$(mainargs)"
@@ -29,6 +29,6 @@ image: image-dep
 
 run: insert-arg
 	echo "TODO: add command here to run simulation $(IMAGE)"
-	$(MAKE) -C $(CREMU_HOME) run ARGS="$(CREMUFLAGS)" IMG=$(IMAGE).bin
+	$(MAKE) -C $(CREMU_HOME) run ARGS="$(CREMUFLAGS)"
 
 .PHONY: insert-arg
