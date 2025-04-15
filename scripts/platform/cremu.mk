@@ -3,7 +3,10 @@ AM_SRCS := riscv/cremu/start.S \
            riscv/cremu/ioe.c \
            riscv/cremu/timer.c \
            riscv/cremu/input.c \
+           riscv/cremu/gpu.c \
+           riscv/cremu/uart.c \
            riscv/cremu/cte.c \
+           riscv/cremu/audio.c \
            riscv/cremu/trap.S \
            platform/dummy/vme.c \
            platform/dummy/mpe.c

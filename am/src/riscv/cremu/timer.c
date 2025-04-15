@@ -6,6 +6,8 @@
 void __am_timer_init() {
 }
 
+void __am_timer_config(AM_TIMER_CONFIG_T *cfg) { cfg->present = true; cfg->has_rtc = true; }
+
 void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   uptime->us = inq(RTC_ADDR);
 }
