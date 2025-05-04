@@ -11,11 +11,15 @@
 #define R_LCR 3  // 线控寄存器
 #define R_LSR 5  // 线状态寄存器
 
+#define CLOCK (50 * 1000 * 1000)
+#define BAUD_RATE 115200
+#define DIV_VALUE (CLOCK / (BAUD_RATE * 16))
+
 void __am_uart_init(){
     UART(R_LCR) = 0b10000011;  // 允许访问除数寄存器
     // 设置除数寄存器，写入顺序不能颠倒
-    UART(R_DLM) = 0x00;        // 高位
-    UART(R_DLL) = 0x01;        // 低位
+    UART(R_DLM) = (DIV_VALUE >> 8) & 0xff; // 高位
+    UART(R_DLL) = DIV_VALUE & 0xff;        // 低位
     UART(R_LCR) = 0b00000011;  // 关闭访问除数寄存器
     // 设置FIFO触发电平，这里保持默认就好
     // UART(UART_FCR) = ;
